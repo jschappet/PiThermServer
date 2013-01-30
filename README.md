@@ -33,3 +33,14 @@ Screenshots/Images
 Screenshot of temperature plot
 <p><a href="http://tomholderness.files.wordpress.com/2013/01/pi_temp_sensor_scaled.jpg"><img src="http://tomholderness.files.wordpress.com/2013/01/pi_temp_sensor_scaled.jpg" width="400"></a></p>
 Raspberry Pi & DS18B20 digital thermometer
+
+
+Enable 1-wire GPIO
+------------------
+By adding the two w1- lines below to /etc/modules, your raspberry pi will automaticlly setup the /sys/bus devices. No need to run modprobe after every reboot.
+
+Edit: /etc/modules
+
+Add: 
+w1-gpio
+w1-therm

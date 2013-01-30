@@ -34,7 +34,7 @@ var server = http.createServer(
 		{
 			// Function to read thermal sensor and return JSON representation of first word (i.e. the data)
 			// Note device location is sensor specific.
-			fs.readFile('/sys/bus/w1/devices/28-00000400a88a/w1_slave', function(err, buffer)
+			fs.readFile('/sys/bus/w1/devices/10-00080293b9f7/w1_slave', function(err, buffer)
 			{
 				if (err)
 				{
@@ -78,15 +78,18 @@ var server = http.createServer(
 			//console.log('favicon requested');
 			return;
 		}
+
                 if (pathfile == '/history.json'){
                         response.writeHead(200, {'Content-Type': 'application/json'});
                         fs.readFile('/root/therm.json', function(err, buffer)
-                        {
+			{
 
-                        var data = buffer.toString('ascii'); // Split by space
+			var data = buffer.toString('ascii'); // Split by space
                         response.end("[" + data + "]","ascii");
-                        });
+			});
 
+                        // Optionally log favicon requests.
+                        //console.log('favicon requested');
                         return;
                 }
 
@@ -111,6 +114,6 @@ var server = http.createServer(
 		}
 });
 // Enable server
-server.listen(8000);
+server.listen(7000);
 // Log message
-console.log('Server running at http://localhost:8000');
+console.log('Server running at http://localhost:7000');

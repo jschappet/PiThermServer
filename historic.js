@@ -1,5 +1,8 @@
 $(function () {
     var chart;
+    var Names=[];
+    Names['10-00080293b9f7']='On Vonage Box';
+    Names['10-00080293b007']='Inside Probe';
     $(document).ready(function() {
     
         // define the options
@@ -20,6 +23,7 @@ $(function () {
             xAxis: {
                 type: 'datetime',
                 tickInterval:  3600 * 1000, // one week
+		hour: '%H:%M',
                 tickWidth: 0,
                 gridLineWidth: 1,
                 labels: {
@@ -119,18 +123,19 @@ $(function () {
 			
 				var d1 = val.temperature_record[0];
 				var date = new Date(d1.unix_time*1000);
-				console.log(date);
+				//var date = d1.unix_time;
+//				console.log(date);
 				if (dataMap[d1.device] == null) {
 					dataMap[d1.device]=[];
 				}
-				dataMap[d1.device].push([ d1.unix_time, d1.celsius ]);
+				dataMap[d1.device].push([ date.getTime(), d1.celsius ]);
                         });
 
 
 			var count = 0;
 			for (var key in dataMap) {
 				options.series[count].data = dataMap[key];
-				options.series[count++].name = key;
+				options.series[count++].name = Names[key];
 			}
 
                         chart = new Highcharts.Chart(options);

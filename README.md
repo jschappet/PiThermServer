@@ -12,6 +12,11 @@ Files
 * load_gpio.sh - bash commands to load kernel modules
 * server.js - NodeJS server, returns temperature as JSON and serves other static files
 * temperature_plot.htm - example client front-end
+* getTemp.pl - Perl Script to read ALL Devices, and create JSON, load via Cron
+	# 10 * * *  * getTemp.pl >> ~/therm.json
+
+* historic.html -- Example Historic graph page
+* historic.js -- script file to load JSON Data
 
 Usage
 -----

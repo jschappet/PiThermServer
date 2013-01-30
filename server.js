@@ -78,6 +78,17 @@ var server = http.createServer(
 			//console.log('favicon requested');
 			return;
 		}
+                if (pathfile == '/history.json'){
+                        response.writeHead(200, {'Content-Type': 'application/json'});
+                        fs.readFile('/root/therm.json', function(err, buffer)
+                        {
+
+                        var data = buffer.toString('ascii'); // Split by space
+                        response.end("[" + data + "]","ascii");
+                        });
+
+                        return;
+                }
 
 
 		else {

@@ -19,6 +19,10 @@ var nodestatic = require('node-static');
 
 // Setup static server for current directory
 var staticServer = new nodestatic.Server(".");
+var jsonData= [];
+
+
+
 
 // Setup node http server
 var server = http.createServer(
@@ -34,7 +38,8 @@ var server = http.createServer(
 		{
 			// Function to read thermal sensor and return JSON representation of first word (i.e. the data)
 			// Note device location is sensor specific.
-			fs.readFile('/sys/bus/w1/devices/10-00080293b9f7/w1_slave', function(err, buffer)
+			fs.readFile('/sys/bus/w1/devices/10-00080293b007/w1_slave', function(err, buffer)
+
 			{
 				if (err)
 				{
@@ -68,6 +73,79 @@ var server = http.createServer(
 			});
 		return;	
 		}
+                if (pathfile == '/now')
+                {
+                        // Function to read thermal sensor and return JSON representation of first word (i.e. the data)
+                        // Note device location is sensor specific.
+                        fs.readFile('/sys/bus/w1/devices/10-00080293b9f7/w1_slave', function(err, buffer)
+                        {
+                                if (err)
+                                {
+                                        response.writeHead(500, { "Content-type": "text/html" });
+                                        response.end(err + "\n");
+                                        console.log('Error serving /temperature.json. ' + err);
+                                        return;
+                                }
+                        // Read data from file (using fast node ASCII encoding).
+                        var data = buffer.toString('ascii').split(" "); // Split by space
+
+                        // Extract temperature from string and divide by 1000 to give celsius
+                        var temp  = parseFloat(data[data.length-1].split("=")[1])/1000.0;
+
+                        // Round to one decimal place
+                        temp = Math.round(temp * 10) / 10
+
+                        // Add date/time to temperature
+                        var jsonData = {
+                     temperature_record:[{
+                        unix_time: Date.now(),
+                        celsius: temp
+                     }]};
+
+                        // Return JSON data
+                        response.writeHead(200, { "Content-type": "application/json" });
+                        response.end(JSON.stringify(jsonData), "ascii");
+                        // Log to console (debugging)
+                        // console.log('returned JSON data: ' + jsonData);
+
+                        });
+
+                        // Function to read thermal sensor and return JSON representation of first word (i.e. the data)
+                        // Note device location is sensor specific.
+                        fs.readFile('/sys/bus/w1/devices/10-00080293b007/w1_slave', function(err, buffer)
+                        {
+                                if (err)
+                                {
+                                        response.writeHead(500, { "Content-type": "text/html" });
+                                        response.end(err + "\n");
+                                        console.log('Error serving /temperature.json. ' + err);
+                                        return;
+                                }
+                        // Read data from file (using fast node ASCII encoding).
+                        var data = buffer.toString('ascii').split(" "); // Split by space
+
+                        // Extract temperature from string and divide by 1000 to give celsius
+                        var temp  = parseFloat(data[data.length-1].split("=")[1])/1000.0;
+
+                        // Round to one decimal place
+                        temp = Math.round(temp * 10) / 10
+
+                        // Add date/time to temperature
+                        var jsonData = {
+                     temperature_record:[{
+                        unix_time: Date.now(),
+                        celsius: temp
+                     }]};
+
+                        // Return JSON data
+                        response.writeHead(200, { "Content-type": "application/json" });
+                        response.end(JSON.stringify(jsonData), "ascii");
+                        // Log to console (debugging)
+                        // console.log('returned JSON data: ' + jsonData);
+
+                        });
+                return;
+                }
 
 		// Handler for favicon.ico requests
 		if (pathfile == '/favicon.ico'){
@@ -79,20 +157,59 @@ var server = http.createServer(
 			return;
 		}
 
-                if (pathfile == '/history.json'){
+                if (pathfile == '/today.json'){
                         response.writeHead(200, {'Content-Type': 'application/json'});
                         fs.readFile('/root/therm.json', function(err, buffer)
 			{
 
 			var data = buffer.toString('ascii'); // Split by space
-                        response.end("[" + data + "]","ascii");
+			var history = JSON.parse("[" + data + "]" );
+
+			var jsonData =[];
+			history.forEach(
+	function(element, index, array) {
+		var yesterday_dt = Date.now() - ( 1000 * 3600 * 24);
+		if ( element.temperature_record[0].unix_time * 1000 >  yesterday_dt) {
+		    jsonData.push(element);
+		}
+	}
+
+			);
+			console.log(JSON.stringify(jsonData));
+			response.end(JSON.stringify(jsonData), "ascii");
+
+
+
+			
 			});
 
+                        //response.end();
                         // Optionally log favicon requests.
                         //console.log('favicon requested');
                         return;
                 }
 
+                if (pathfile == '/history.json'){
+                        response.writeHead(200, {'Content-Type': 'application/json'});
+                        fs.readFile('/root/therm.json', function(err, buffer)
+                        {
+
+                        var data = buffer.toString('ascii'); // Split by space
+                        response.end("[" + data + "]","ascii");
+                        });
+
+                        // Optionally log favicon requests.
+                        //console.log('favicon requested');
+                        return;
+                }
+		if (pathfile=='/') {
+
+			var index = fs.readFileSync('index.html');
+			response.writeHead(200, {'Content-Type': 'text/html'});
+			response.end(index);
+			return;
+
+		}
 
 		else {
 			// Print requested file to terminal

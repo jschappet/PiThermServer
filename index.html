@@ -15,22 +15,24 @@
   }
   </style>
   <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="jquery.cookie.js"></script>
+  <script src="/util.js"></script>
 </head>
 <body>
 <div id="now_link">
 <a href="today.html">Last 24hrs</a><br>
 </div>
-  <div id="temperature">20&deg;c</div>
+  <div id="temperature"></div>
 <script>
 $.getJSON('temperature.json',	function(data) {
  
   var currentTemp = '';
   $.each(data, function(key, val) {
     console.log("key: " + key + " val: " + JSON.stringify(val[0].celsius));
-	currentTemp=val[0].celsius;
+	currentTemp=convert(val[0].celsius);
   });
  
-  $("#temperature").html(currentTemp + "&deg;c");
+  $("#temperature").html(currentTemp + ($.cookie('therm_f') ? "&deg;f": "&deg;c" ));
 });
 </script>
  

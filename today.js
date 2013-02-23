@@ -1,3 +1,4 @@
+
 $(function () {
     var chart;
     var Names=[];
@@ -128,7 +129,7 @@ $(function () {
 				if (dataMap[d1.device] == null) {
 					dataMap[d1.device]=[];
 				}
-				dataMap[d1.device].push([ date, d1.celsius ]);
+				dataMap[d1.device].push([ date, convert(d1.celsius) ]);
                         });
 
 
@@ -146,3 +147,4 @@ $(function () {
     });
     
 });
+

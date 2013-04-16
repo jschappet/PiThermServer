@@ -157,26 +157,15 @@ var server = http.createServer(
 			return;
 		}
 
-                if (pathfile == '/today.json'){
-                        response.writeHead(200, {'Content-Type': 'application/json'});
-                        fs.readFile('/root/therm.json', function(err, buffer)
+                if (pathfile == '/now.json'){
+                        response.writeHead(200, {'Content-Type': 'application/json',
+				 'Access-Control-Allow-Origin': 'http://www.schappet.com'});
+                        fs.readFile('/root/therm.now.json', function(err, buffer)
 			{
 
 			var data = buffer.toString('ascii'); // Split by space
-			var history = JSON.parse("[" + data + "]" );
-
-			var jsonData =[];
-			history.forEach(
-	function(element, index, array) {
-		var yesterday_dt = Date.now() - ( 1000 * 3600 * 24);
-		if ( element.temperature_record[0].unix_time * 1000 >  yesterday_dt) {
-		    jsonData.push(element);
-		}
-	}
-
-			);
-			console.log(JSON.stringify(jsonData));
-			response.end(JSON.stringify(jsonData), "ascii");
+			var history = JSON.parse(data);
+			response.end(JSON.stringify(history), "ascii");
 
 
 
@@ -188,6 +177,85 @@ var server = http.createServer(
                         //console.log('favicon requested');
                         return;
                 }
+
+
+                if (pathfile == '/range.json'){
+                        response.writeHead(200, {'Content-Type': 'application/json',  'Access-Control-Allow-Origin': 'http://www.schappet.com'});
+                        fs.readFile('/root/current.json', function(err, buffer)
+                        {
+
+                        var data = buffer.toString('ascii'); // Split by space
+                        var history = JSON.parse("[" + data + "]" );
+
+                        var jsonData =[];
+			var min ;
+			var max ;
+                        history.forEach(
+        function(element, index, array) {
+		if (min == null) { min = element };
+		if (max == null) { max = element };
+                var yesterday_dt = Date.now() - ( 1000 * 3600 * 24);
+                if ( element.temperature_record[0].unix_time * 1000 >  yesterday_dt) {
+
+		    if ( element.temperature_record[0].device=='10-00080293b007' &&
+				 element.temperature_record[0].celsius < min.temperature_record[0].celsius ) {
+				min =  element;
+		    }
+
+	           if ( element.temperature_record[0].device=='10-00080293b007' &&
+                                 element.temperature_record[0].celsius > max.temperature_record[0].celsius ) {
+                        max =  element;
+                   }
+
+                }
+        }
+
+                        );
+			jsonData.push(min);
+			jsonData.push(max);
+                        console.log(JSON.stringify(jsonData));
+                        response.end(JSON.stringify(jsonData), "ascii");
+
+
+
+
+                        });
+
+                        return;
+                }
+
+                if (pathfile == '/today.json'){
+                        response.writeHead(200, {'Content-Type': 'application/json'});
+                        fs.readFile('/root/current.json', function(err, buffer)
+                        {
+
+                        var data = buffer.toString('ascii'); // Split by space
+                        var history = JSON.parse("[" + data + "]" );
+
+                        var jsonData =[];
+                        history.forEach(
+        function(element, index, array) {
+                var yesterday_dt = Date.now() - ( 1000 * 3600 * 24);
+                if ( element.temperature_record[0].unix_time * 1000 >  yesterday_dt) {
+                    jsonData.push(element);
+                }
+        }
+
+                        );
+                        console.log(JSON.stringify(jsonData));
+                        response.end(JSON.stringify(jsonData), "ascii");
+
+
+
+
+                        });
+
+                        //response.end();
+                        // Optionally log favicon requests.
+                        //console.log('favicon requested');
+                        return;
+                }
+
 
                 if (pathfile == '/history.json'){
                         response.writeHead(200, {'Content-Type': 'application/json'});
@@ -219,7 +287,7 @@ var server = http.createServer(
 			staticServer.serve(request, response, function (err, result) {
 					if (err){
 						// Log the error
-						sys.error("Error serving " + request.url + " - " + err.message);
+						//sys.error("Error serving " + request.url + " - " + err.message);
 						
 						// Respond to the client
 						response.writeHead(err.status, err.headers);

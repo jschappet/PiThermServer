@@ -4,6 +4,7 @@ $(function () {
     var Names=[];
     Names['10-00080293b9f7']='Inside Basement';
     Names['10-00080293b007']='Outside';
+    Names['28-00000455e13f']='Other';
     $(document).ready(function() {
     
         // define the options

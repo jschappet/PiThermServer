@@ -163,6 +163,13 @@ var server = http.createServer(
                         fs.readFile('/root/therm.now.json', function(err, buffer)
 			{
 
+			if (err != null ) {
+				console.log(err);
+				response.writeHead(500, { "Content-type": "text/html" });
+				response.end(err + "\n");
+				return;
+				
+			}
 			var data = buffer.toString('ascii'); // Split by space
 			var history = JSON.parse(data);
 			response.end(JSON.stringify(history), "ascii");
@@ -183,6 +190,13 @@ var server = http.createServer(
                         response.writeHead(200, {'Content-Type': 'application/json',  'Access-Control-Allow-Origin': 'http://www.schappet.com'});
                         fs.readFile('/root/current.json', function(err, buffer)
                         {
+                        if (err != null ) {
+                                console.log(err);
+                                response.writeHead(500, { "Content-type": "text/html" });
+                                response.end(err + "\n");
+                                return;
+
+                        }
 
                         var data = buffer.toString('ascii'); // Split by space
                         var history = JSON.parse("[" + data + "]" );
@@ -228,6 +242,13 @@ var server = http.createServer(
                         response.writeHead(200, {'Content-Type': 'application/json'});
                         fs.readFile('/root/current.json', function(err, buffer)
                         {
+                        if (err != null ) {
+                                console.log(err);
+                                response.writeHead(500, { "Content-type": "text/html" });
+                                response.end(err + "\n");
+                                return;
+
+                        }
 
                         var data = buffer.toString('ascii'); // Split by space
                         var history = JSON.parse("[" + data + "]" );
@@ -261,6 +282,13 @@ var server = http.createServer(
                         response.writeHead(200, {'Content-Type': 'application/json'});
                         fs.readFile('/root/therm.json', function(err, buffer)
                         {
+                        if (err != null ) {
+                                console.log(err);
+                                response.writeHead(500, { "Content-type": "text/html" });
+                                response.end(err + "\n");
+                                return;
+
+                        }
 
                         var data = buffer.toString('ascii'); // Split by space
                         response.end("[" + data + "]","ascii");
